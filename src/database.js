@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 //Conexion a base de datos
-const URI = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/DBDevelop';
+const URI = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/DBDevelop'; //mongodb://localhost/wishlists
 
 //Configuracion de la conexion
 mongoose.connect(URI, {
