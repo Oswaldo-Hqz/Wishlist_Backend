@@ -18,7 +18,7 @@ module.exports = function validateRegisterInput (data) {
         errors.email = "Email es requerido";
     } else if (!validator.isEmail(data.email)) {
         errors.email = "Email no es valido"
-    }
+    } 
 
     if (validator.isEmpty(data.password)) {
         errors.password = "Password es requerida";
