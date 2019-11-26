@@ -22,9 +22,9 @@ userController.getUsers = async (req, res) => {
     const users = await userModel.find();
 
     res.json(users);
-    };
+};
 
-    userController.createUser = async (req, res) => {
+userController.createUser = async (req, res) => {
     // const { username } = req.body;
     // const newUser = new userModel({
     //     username
@@ -71,6 +71,39 @@ userController.getUsers = async (req, res) => {
     }
     
 }; 
+
+userController.loginUser = async (req, res) => {
+    const { errors, isValid } = validateLoginInput(req.body);
+    const { name, email, password } = req.body;
+
+    if (!isValid) {
+        res.status(400).json(errors);
+    };
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(404).json({ emailnotfound: "Email not found" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (isMatch) {
+        // User matched
+        // Create JWT Payload
+        const payload = {
+        id: user.id,
+        name: user.name
+        };
+
+        jwt.sign(payload, keys.secretOrKey, {expiresIn: 31556926 /* 1 year in seconds*/}, (err, token) => {
+              res.json({success: true, token: "Bearer " + token});
+            }
+          );
+    } else {
+        res.status(400).json({ passwordincorrect: "Password incorrect" });
+    }
+
+};
 
 userController.getUser = async (req, res) => {
     const user = await userModel.findById(req.params.id);
