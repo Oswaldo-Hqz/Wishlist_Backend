@@ -42,32 +42,32 @@ userController.getUsers = async (req, res) => {
             res.status(400).json(errors);
         }
         const user = await userModel.findOne({ email: req.body.email });
-    
+        
         if (user) {
             res.status(400).json({ email: "Email already exists" });
         } else {
-            const newUser = new User({
+            const newUser = new userModel({
                 name: name,
                 email: email,
                 password: password
             });
-    
-            //Hash password before saving in database
-            // bcrypt.genSalt(10, (err, salt) => {
-            //     bcrypt.hash(newUser.password, salt, (err, hash) => {
-            //         if (err) throw err;
-            //         newUser.password = hash;
-            //         newUser
-            //             .save()
-            //             .then(user => res.json(user))
-            //             .catch(err => console.log(err));
-            //     });
-            // });
-            res.json({message: 'Guardado!'})
+            
+            // Hash password before saving in database
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(newUser.password, salt, (err, hash) => {
+                    if (err) throw err;
+                    newUser.password = hash;
+                    newUser
+                        .save()
+                        .then(user => res.json(user))
+                        .catch(err => console.log(err));
+                });
+            });
+            // res.json({message: 'Guardado!'})
         }
         
     } catch (error) {
-        next(error);
+        res.status(400).json(error);
     }
     
 }; 
