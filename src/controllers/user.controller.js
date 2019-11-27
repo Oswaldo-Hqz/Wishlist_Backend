@@ -1,22 +1,11 @@
 const bcrypt = require("bcryptjs");
-
-const userController = {};
-/*
-userController.getUsers = (req, res) => res.json({message: []});
-
-userController.createUser = (req, res) => res.json({message: 'method POST'}); 
-
-userController.getUser = (req, res) => res.json({message: 'method GET:id'});
-
-userController.updateUser = (req, res) => res.json({message: 'method UPDATE:id'});
-
-userController.deleteUser = (req, res) => res.json({message: 'method DELETE:id'}); 
-*/
-
+const jwt = require("jsonwebtoken");
 const validateRegisterInput = require("../validation/register");
 const validateLoginInput = require("../validation/login");
-
 const userModel = require('../models/user');
+
+const userController = {};
+
 
 userController.getUsers = async (req, res) => {
     const users = await userModel.find();
@@ -25,13 +14,6 @@ userController.getUsers = async (req, res) => {
 };
 
 userController.createUser = async (req, res) => {
-    // const { username } = req.body;
-    // const newUser = new userModel({
-    //     username
-    // });   
-    // await newUser.save();
-    
-    // res.json({message: 'Guardado!'})
 
     try {
         const { errors, isValid } = validateRegisterInput(req.body);
@@ -63,7 +45,6 @@ userController.createUser = async (req, res) => {
                         .catch(err => console.log(err));
                 });
             });
-            // res.json({message: 'Guardado!'})
         }
         
     } catch (error) {
@@ -81,7 +62,7 @@ userController.loginUser = async (req, res) => {
     };
 
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await userModel.findOne({ email });
     if (!user) {
         res.status(404).json({ emailnotfound: "Email not found" });
     }
@@ -91,14 +72,13 @@ userController.loginUser = async (req, res) => {
         // User matched
         // Create JWT Payload
         const payload = {
-        id: user.id,
-        name: user.name
+            id: user.id,
+            name: user.name
         };
 
-        jwt.sign(payload, keys.secretOrKey, {expiresIn: 31556926 /* 1 year in seconds*/}, (err, token) => {
-              res.json({success: true, token: "Bearer " + token});
-            }
-          );
+        jwt.sign(payload, process.env.SECRETORKEY, { expiresIn: 31556926 /* 1 year in seconds*/ }, (err, token) => {
+            res.json({ success: true, token: "Bearer " + token });
+        });
     } else {
         res.status(400).json({ passwordincorrect: "Password incorrect" });
     }
