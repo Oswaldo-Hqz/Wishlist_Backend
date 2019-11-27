@@ -12,8 +12,11 @@ const { getUsers, createUser, getUser, updateUser, deleteUser } = require('../co
 router.route('/')
 .get(getUsers);
 
-router.route('/')
+router.route('/Register')
 .post(createUser);
+
+router.route('/Login')
+.post(loginUser);
 
 router.route('/:id')
 .get(getUser)
